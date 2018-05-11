@@ -46,14 +46,16 @@ bola = Bola("ball.png", 500,500,
             randrange(-10,10), randrange(-10,10))
 bola_group = pygame.sprite.Group()
 bola_group.add(bola)
-raquete = Player("player1.png", 200,475 ,
+jogador1 = Player("player1.png", 200,475 ,
                   randrange(-10,10), randrange(-10,10))
-raquete_group = pygame.sprite.Group()
-raquete_group.add(raquete)
+jogador1_group = pygame.sprite.Group()
+jogador1_group.add(raquete)
 goal = Bola("goal1.png",0,480, randrange(-10,10), randrange(-10,10))
 goal_group = pygame.sprite.Group()
 goal_group.add(goal)
-
+goal2 = Bola("goal2.png",740,480, randrange(-10,10), randrange(-10,10))
+goal2_group = pygame.sprite.Group()
+goal2_group.add(goal2)
 # ===============   LOOPING PRINCIPAL   ===============
 relogio = pygame.time.Clock()
 rodando = True
@@ -63,7 +65,10 @@ while rodando:
       raquete.rect.x -= 5
   elif pressed_keys[K_RIGHT]:
       raquete.rect.x += 5   
-  if pygame.sprite.spritecollide(bola,raquete_group,False):
+  if pygame.sprite.spritecollide(bola,jogador1_group,False):
+      bola.vx = -bola.vx
+      bola.vy = -bola.vy
+  if pygame.sprite.spritecollide(bola,goal2_group,False) or pygame.sprite.spritecollide(bola,goal_group,False) :
       bola.vx = -bola.vx
       bola.vy = -bola.vy
   tempo = relogio.tick(30)
@@ -80,7 +85,8 @@ while rodando:
   #gera saídas
   tela.blit(fundo, (0, 0))
   bola_group.draw(tela)
-  raquete_group.draw(tela)
+  jogador1_group.draw(tela)
   goal_group.draw(tela)
+  goal2_group.draw(tela)
   pygame.display.update()     
 pygame.display.quit()
