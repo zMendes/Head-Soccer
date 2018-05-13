@@ -49,7 +49,7 @@ bola_group.add(bola)
 jogador1 = Player("player1.png", 200,475 ,
                   randrange(-10,10), randrange(-10,10))
 jogador1_group = pygame.sprite.Group()
-jogador1_group.add(raquete)
+jogador1_group.add(jogador1)
 goal = Bola("goal1.png",0,480, randrange(-10,10), randrange(-10,10))
 goal_group = pygame.sprite.Group()
 goal_group.add(goal)
@@ -62,9 +62,9 @@ rodando = True
 while rodando:
   pressed_keys = pygame.key.get_pressed()
   if pressed_keys[K_LEFT]:
-      raquete.rect.x -= 5
+      jogador1.rect.x -= 5
   elif pressed_keys[K_RIGHT]:
-      raquete.rect.x += 5   
+      jogador1.rect.x += 5   
   if pygame.sprite.spritecollide(bola,jogador1_group,False):
       bola.vx = -bola.vx
       bola.vy = -bola.vy
