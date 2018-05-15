@@ -1,186 +1,81 @@
-# Main Game
+import pygame
+import sys
+from pygame.locals import *
+from random import randrange
 
-# Imports
-import pygame as pg
-import random
-from settings import *
-from sprites import *
-from os import path
+# ===============      CLASSES      ===============
+class Bola(pygame.sprite.Sprite):
+  
+  def __init__(self, arquivo_imagem, pos_x, pos_y, vel_x, vel_y):
+    pygame.sprite.Sprite.__init__(self)
+    self.vx = vel_x
+    self.vy = vel_y
+    self.image = pygame.image.load(arquivo_imagem)
+    self.rect = self.image.get_rect()
+    self.rect.x = pos_x
+    self.rect.y = pos_y
+    
+  def move(self):
+    self.rect.x += self.vx
+    self.rect.y += self.vy
+class Raquete(pygame.sprite.Sprite):    
+  
+  def __init__(self, arquivo_imagem, pos_x, pos_y, vel_x, vel_y):
+    pygame.sprite.Sprite.__init__(self)
+    self.vx = vel_x
+    self.vy = vel_y
+    self.image = pygame.image.load(arquivo_imagem)
+    self.rect = self.image.get_rect()
+    self.rect.x = pos_x
+    self.rect.y = pos_y
+    
+  def move(self):
+    self.rect.x += self.vx
+    self.rect.y += self.vy
+# ===============   INICIALIZAÇÃO   ===============
+pygame.init()
+tela = pygame.display.set_mode((800, 600), 0, 32)
+pygame.display.set_caption('Hello World')
 
-# Class Jogo
-class Game:
+# carrega imagem de fundo (https://wallpapersafari.com/dark-green-background/)
+fundo = pygame.image.load("fundo.jpg").convert()
 
-	def __init__(self):
-		pg.init()
-		pg.mixer.init()
-		self.screen = pg.display.set_mode((WIDTH+int(PLAYER_WIDTH/2), HEIGHT))
-		pg.display.set_caption(TITLE)
-		self.clock = pg.time.Clock()
-		self.font_name = pg.font.match_font(FONT_NAME)
-		self.running = True
-		#self.score = 0
-		#self.load_data()
-
-	#def load_data(self):
-	#	#load highscore
-	#	self.dir = path.dirname(__file__)
-	#	if path.isfile(path.join(self.dir, HS_FILE)):
-	#		self.file_exist = "r+"
-	#	else:
-	#		self.file_exist = "w"
-
-	#	with open(path.join(self.dir, HS_FILE), self.file_exist) as hs:
-	#		try:
-	#			self.highscore = int(hs.read())
-	#		except:
-	#			self.highscore = 0
-
-	def new(self):
-		self.all_sprites = pg.sprite.Group()
-		self.platforms = pg.sprite.Group()
-		self.squares = pg.sprite.Group()
-		floor = Platform(0-(int(PLAYER_WIDTH/2)), HEIGHT - 40, WIDTH+int(PLAYER_WIDTH/2), 40)
-		self.all_sprites.add(floor)
-		self.platforms.add(floor)
-		self.square = Square(self, SQUARE_WIDTH, SQUARE_HEIGHT)
-		self.squares.add(self.square)
-		self.all_sprites.add(self.square)
-		self.player = Player(self, PLAYER_WIDTH, PLAYER_HEIGHT)
-		self.player2 = Player2(self, PLAYER_WIDTH, PLAYER_HEIGHT)  
-		self.all_sprites.add(self.player)
-		self.all_sprites.add(self.player2)  
-		self.run()
-
-	def run(self):
-		self.playing = True
-
-		while self.playing:
-			self.clock.tick(FPS)
-			self.events()
-			self.update()
-			self.draw()
-
-	def update(self):
-		self.all_sprites.update()
-		if self.player.vel.y > 0:
-			hits = pg.sprite.spritecollide(self.player, self.platforms, False)
-			if hits:
-				self.player.pos.y = hits[0].rect.top + 1
-				self.player.vel.y = 0
-		hits = pg.sprite.spritecollide(self.player, self.squares, False)
-		if self.player2.vel.y > 0:
-			hits = pg.sprite.spritecollide(self.player2, self.platforms, False)  
-			if hits:
-				self.player2.pos.y = hits[0].rect.top + 1
-				self.player2.vel.y = 0
-		hits2  = pg.sprite.spritecollide(self.player, self.squares, False)
-		hits3  = pg.sprite.spritecollide(self.player2, self.squares, False)
+# cria bola (http://pngimg.com/download/10405)
+bola = Bola("ball.png", randrange(800),randrange(600), 
+            randrange(-10,10), randrange(-10,10))
+bola_group = pygame.sprite.Group()
+bola_group.add(bola)
+raquete = Raquete("raquete-30X150.png", randrange(800), randrange(600),
+                  randrange(-10,10), randrange(-10,10))
+raquete_group = pygame.sprite.Group()
+raquete_group.add(raquete)
+# ===============   LOOPING PRINCIPAL   ===============
+relogio = pygame.time.Clock()
+rodando = True
+while rodando:
+  pressed_keys = pygame.key.get_pressed()
+  if pressed_keys[K_UP]:
+      raquete.rect.y -= 5
+  elif pressed_keys[K_DOWN]:
+      raquete.rect.y += 5   
+  if pygame.sprite.spritecollide(bola,raquete_group,False):
+      bola.vx = -bola.vx
+      bola.vy = -bola.vy
+  tempo = relogio.tick(30)
+  for event in pygame.event.get():  #pega lista de eventos
+    if event.type == QUIT:      #verifica se um dos eventso é QUIT (janela fechou)
+      rodando = False            #executa a função de sistema "exit"
+  #move a bola pela tela
+  bola.move()
+  if bola.rect.x < 0 or bola.rect.x > 800:
+    bola.vx = - bola.vx
+  if bola.rect.y < 0 or bola.rect.y > 600:
+    bola.vy = - bola.vy
         
-		if hits3 or hits2:
-			self.square.vel.x = SQUARE_SPEED
-		if self.square.pos.x == 750 or self.square.pos.x ==40:
-			self.square.vel.x = -SQUARE_SPEED
-		#if self.score > self.highscore:
-		#	self.highscore = self.score
-		#	with open(path.join(self.dir, HS_FILE), "r+") as hs:
-		#		hs.write(str(self.highscore))
-
-	def events(self):
-		for event in pg.event.get():
-
-			if event.type == pg.QUIT:
-				if self.playing:
-					self.playing = False
-				self.running = False
-
-			if event.type == pg.KEYDOWN:
-
-				if event.key == pg.K_UP:
-					self.player.jump()
-				if event.key == pg.K_w:
-					self.player2.jump()
+  #gera saídas
+  tela.blit(fundo, (0, 0))
+  bola_group.draw(tela)
+  raquete_group.draw(tela)
+  pygame.display.update()      #coloca a tela na janela
     
-			#if pg.sprite.spritecollide(square, self.player,False):           COlisão com a bola
-				#square = (-self.pos)                
-	def draw(self):
-		self.fundo = pg.image.load("fundo.jpg").convert()
-		self.screen.fill(BGCOLOR)
-		self.all_sprites.draw(self.screen) #mudei de screen p fundo
-		#self.draw_text("Score: " + str(self.score), 24, BLACK, WIDTH / 2, HEIGHT / 4)
-		#if self.score >= self.highscore and self.highscore != 0:
-		#	self.draw_text("NEW HIGH SCORE! " + str(self.highscore), 24, BLACK, WIDTH / 2, (HEIGHT / 4) - 30)
-		#else:
-		#	self.draw_text("High Score: " + str(self.highscore), 24, BLACK, WIDTH / 2, (HEIGHT / 4) - 30)
-	
-		pg.display.flip()
-
-	def show_start_screen(self):
-		self.screen.fill(BGCOLOR)
-		self.draw_text(TITLE, 48, RED, WIDTH / 2, HEIGHT / 4)
-		self.draw_text("Press the arrows to move", 24, BLACK, WIDTH / 2, HEIGHT / 2)
-		self.draw_text("Press a key to play", 24, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
-		#self.draw_text("High Score: " + str(self.highscore), 24, BLACK, WIDTH / 2, 15)
-		pg.display.flip()
-		self.wait_for_key()
-
-	def show_go_screen(self):
-		if not self.running:
-			return
-		self.screen.fill(BGCOLOR)
-		self.draw_text("GAME OVER", 48, RED, WIDTH / 2, HEIGHT / 4)
-	#	self.draw_text("Score: " + str(self.score), 36, BLACK, WIDTH / 2, (HEIGHT / 2) + 30)
-		self.draw_text("Press a key to play again", 24, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
-	#	if self.score >= self.highscore and self.highscore != 0:
-	#		self.draw_text("NEW HIGH SCORE! " + str(self.highscore), 24, BLACK, WIDTH / 2, (HEIGHT / 4) - 30)
-	#	else:
-	#		self.draw_text("High Score: " + str(self.highscore), 36, BLACK, WIDTH / 2, (HEIGHT / 2) - 30)
-		pg.display.flip()
-		self.wait_for_key()
-
-
-	def wait_for_key(self):
-		waiting = True
-		while waiting:
-			self.clock.tick(FPS)
-			for event in pg.event.get():
-				if event.type == pg.QUIT:
-					waiting = False
-					self.running = False
-				if event.type == pg.KEYUP:
-					self.score = 0
-					waiting = False
-
-	def draw_text(self, text, size, color, x, y):
-		font = pg.font.Font(self.font_name, size)
-		text_surface = font.render(text, True, color)
-		text_rect = text_surface.get_rect()
-		text_rect.midtop = (x, y)
-		self.screen.blit(text_surface, text_rect)
-
-
-# Jogo
-g = Game()
-g.show_start_screen()
-while g.running:
-	g.new()
-	g.show_go_screen()
-
-pg.quit()
-
-
-
-
-
-
-
-  #bola reflete na parede
-#if square.rect.x < 0 or bola.rect.x > 800:
- #   s.vx = - bola.vx
-#if bola.rect.y < 0 or bola.rect.y > 600:
- #   bola.vy = - bola.vy
-    
-    
-  #  #bola reflete no player
-#if pygame.sprite.spritecollide(bola,raquete_group,True):
-#    bola.vx=-bola.vx
- #   bola.vy=-bola.vy
+pygame.display.quit()
