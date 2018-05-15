@@ -3,8 +3,9 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
-GREEN = (0, 255, 0)
+GREEN = (0, 140, 0)
 LIGHT_GREY = (208, 218, 234)
+PINK = (255, 37, 129)
 
 # Game options / Settings
 TITLE = "Head Soccer"
@@ -24,6 +25,6 @@ PLAYER_WIDTH = 30
 PLAYER_HEIGHT = 60
 
 # Square properties
-SQUARE_SPEED = 0
+SQUARE_SPEED = 10
 SQUARE_WIDTH = 30
 SQUARE_HEIGHT = 30
