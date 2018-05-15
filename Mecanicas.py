@@ -39,7 +39,7 @@ class Game:
 		self.all_sprites = pg.sprite.Group()
 		self.platforms = pg.sprite.Group()
 		self.squares = pg.sprite.Group()
-		floor = Platform(0, HEIGHT - 40, WIDTH+int(PLAYER_WIDTH/2), 40)
+		floor = Platform(0-(int(PLAYER_WIDTH/2)), HEIGHT - 40, WIDTH+int(PLAYER_WIDTH/2), 40)
 		self.all_sprites.add(floor)
 		self.platforms.add(floor)
 		self.square = Square(self, SQUARE_WIDTH, SQUARE_HEIGHT)
@@ -77,7 +77,7 @@ class Game:
 		hits3  = pg.sprite.spritecollide(self.player2, self.squares, False)
         
 		if hits3 or hits2:
-			self.square.vel.x = -(self.square.vel.x)
+			self.square.vel.x = SQUARE_SPEED
 		if self.square.pos.x == 750 or self.square.pos.x ==40:
 			self.square.vel.x = -SQUARE_SPEED
 		#if self.score > self.highscore:
