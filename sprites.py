@@ -110,8 +110,8 @@ class Square(pg.sprite.Sprite):
 		self.image.fill(RED)
 		self.rect = self.image.get_rect()
 		self.rect.center = (0, HEIGHT -40)
-		self.pos = vec(400, (HEIGHT -40))
-		self.vel = vec(SQUARE_SPEED, 0)
+		self.pos = vec(400, (HEIGHT))
+		self.vel = vec(SQUARE_INICIAL, 0)
         
         
 	def update(self):
