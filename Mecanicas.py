@@ -46,7 +46,9 @@ class Game:
 		self.squares.add(self.square)
 		self.all_sprites.add(self.square)
 		self.player = Player(self, PLAYER_WIDTH, PLAYER_HEIGHT)
+		self.player2 = Player2(self, PLAYER_WIDTH, PLAYER_HEIGHT)  
 		self.all_sprites.add(self.player)
+		self.all_sprites.add(self.player2)  
 		self.run()
 
 	def run(self):
@@ -66,9 +68,18 @@ class Game:
 				self.player.pos.y = hits[0].rect.top + 1
 				self.player.vel.y = 0
 		hits = pg.sprite.spritecollide(self.player, self.squares, False)
-		if hits:
-			self.playing = False
-
+		if self.player2.vel.y > 0:
+			hits = pg.sprite.spritecollide(self.player2, self.platforms, False)  
+			if hits:
+				self.player2.pos.y = hits[0].rect.top + 1
+				self.player2.vel.y = 0
+		hits2  = pg.sprite.spritecollide(self.player, self.squares, False)
+		hits3  = pg.sprite.spritecollide(self.player2, self.squares, False)
+        
+		if hits3 or hits2:
+			self.square.vel.x = -(self.square.vel.x)
+		if self.square.pos.x == 750 or self.square.pos.x ==40:
+			self.square.vel.x = -SQUARE_SPEED
 		#if self.score > self.highscore:
 		#	self.highscore = self.score
 		#	with open(path.join(self.dir, HS_FILE), "r+") as hs:
@@ -84,12 +95,17 @@ class Game:
 
 			if event.type == pg.KEYDOWN:
 
-				if event.key == pg.K_w:
+				if event.key == pg.K_UP:
 					self.player.jump()
-
+				if event.key == pg.K_w:
+					self.player2.jump()
+    
+			#if pg.sprite.spritecollide(square, self.player,False):           COlisão com a bola
+				#square = (-self.pos)                
 	def draw(self):
+		self.fundo = pg.image.load("fundo.jpg").convert()
 		self.screen.fill(BGCOLOR)
-		self.all_sprites.draw(self.screen)
+		self.all_sprites.draw(self.screen) #mudei de screen p fundo
 		#self.draw_text("Score: " + str(self.score), 24, BLACK, WIDTH / 2, HEIGHT / 4)
 		#if self.score >= self.highscore and self.highscore != 0:
 		#	self.draw_text("NEW HIGH SCORE! " + str(self.highscore), 24, BLACK, WIDTH / 2, (HEIGHT / 4) - 30)
@@ -101,7 +117,7 @@ class Game:
 	def show_start_screen(self):
 		self.screen.fill(BGCOLOR)
 		self.draw_text(TITLE, 48, RED, WIDTH / 2, HEIGHT / 4)
-		self.draw_text("Press A and D to move, W to jump", 24, BLACK, WIDTH / 2, HEIGHT / 2)
+		self.draw_text("Press the arrows to move", 24, BLACK, WIDTH / 2, HEIGHT / 2)
 		self.draw_text("Press a key to play", 24, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
 		#self.draw_text("High Score: " + str(self.highscore), 24, BLACK, WIDTH / 2, 15)
 		pg.display.flip()
@@ -158,13 +174,13 @@ pg.quit()
 
 
   #bola reflete na parede
-  if bola.rect.x < 0 or bola.rect.x > 800:
-    bola.vx = - bola.vx
-  if bola.rect.y < 0 or bola.rect.y > 600:
-    bola.vy = - bola.vy
+#if square.rect.x < 0 or bola.rect.x > 800:
+ #   s.vx = - bola.vx
+#if bola.rect.y < 0 or bola.rect.y > 600:
+ #   bola.vy = - bola.vy
     
     
-    #bola reflete no player
-    if pygame.sprite.spritecollide(bola,raquete_group,True):
-      bola.vx=-bola.vx
-      bola.vy=-bola.vy
+  #  #bola reflete no player
+#if pygame.sprite.spritecollide(bola,raquete_group,True):
+#    bola.vx=-bola.vx
+ #   bola.vy=-bola.vy
