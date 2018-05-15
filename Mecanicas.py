@@ -13,7 +13,7 @@ class Game:
 	def __init__(self):
 		pg.init()
 		pg.mixer.init()
-		self.screen = pg.display.set_mode((WIDTH, HEIGHT))
+		self.screen = pg.display.set_mode((WIDTH+int(PLAYER_WIDTH/2), HEIGHT))
 		pg.display.set_caption(TITLE)
 		self.clock = pg.time.Clock()
 		self.font_name = pg.font.match_font(FONT_NAME)
@@ -39,7 +39,7 @@ class Game:
 		self.all_sprites = pg.sprite.Group()
 		self.platforms = pg.sprite.Group()
 		self.squares = pg.sprite.Group()
-		floor = Platform(0, HEIGHT - 40, WIDTH, 40)
+		floor = Platform(0, HEIGHT - 40, WIDTH+int(PLAYER_WIDTH/2), 40)
 		self.all_sprites.add(floor)
 		self.platforms.add(floor)
 		self.square = Square(self, SQUARE_WIDTH, SQUARE_HEIGHT)
@@ -84,7 +84,7 @@ class Game:
 
 			if event.type == pg.KEYDOWN:
 
-				if event.key == pg.K_SPACE:
+				if event.key == pg.K_w:
 					self.player.jump()
 
 	def draw(self):
@@ -101,7 +101,7 @@ class Game:
 	def show_start_screen(self):
 		self.screen.fill(BGCOLOR)
 		self.draw_text(TITLE, 48, RED, WIDTH / 2, HEIGHT / 4)
-		self.draw_text("Press A and D to move, SPACE to jump", 24, BLACK, WIDTH / 2, HEIGHT / 2)
+		self.draw_text("Press A and D to move, W to jump", 24, BLACK, WIDTH / 2, HEIGHT / 2)
 		self.draw_text("Press a key to play", 24, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
 		#self.draw_text("High Score: " + str(self.highscore), 24, BLACK, WIDTH / 2, 15)
 		pg.display.flip()

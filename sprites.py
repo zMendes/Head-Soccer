@@ -55,7 +55,7 @@ class Platform(pg.sprite.Sprite):
 	def __init__(self, x, y, w, h):
 		pg.sprite.Sprite.__init__(self)
 		self.image = pg.Surface((w, h))
-		self.image.fill(BLACK)
+		self.image.fill(GREEN)
 		self.rect = self.image.get_rect()
 		self.rect.x = x
 		self.rect.y = y
@@ -72,16 +72,16 @@ class Square(pg.sprite.Sprite):
 		self.pos = vec(0, (HEIGHT -40))
 		self.vel = vec(SQUARE_SPEED, 0)
 
-	#def update(self):
-#
-#		if self.pos.x < 0:
-#			self.game.score += 1
-#			self.vel.x = -self.vel.x + 0.1
-#
-#		if self.pos.x > WIDTH:
-#			self.game.score += 1
-#			self.vel.x = -self.vel.x - 0.1
-#
-#		self.pos.x += self.vel.x
-#
-#		self.rect.midbottom = self.pos
+	def update(self):
+
+		if self.pos.x < 0:
+			self.game.score += 1
+			self.vel.x = -self.vel.x + 0.1
+
+		if self.pos.x > WIDTH:
+			self.game.score += 1
+			self.vel.x = -self.vel.x - 0.1
+
+		self.pos.x += self.vel.x
+
+		self.rect.midbottom = self.pos
