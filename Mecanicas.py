@@ -150,3 +150,21 @@ while g.running:
 	g.show_go_screen()
 
 pg.quit()
+
+
+
+
+
+
+
+  #bola reflete na parede
+  if bola.rect.x < 0 or bola.rect.x > 800:
+    bola.vx = - bola.vx
+  if bola.rect.y < 0 or bola.rect.y > 600:
+    bola.vy = - bola.vy
+    
+    
+    #bola reflete no player
+    if pygame.sprite.spritecollide(bola,raquete_group,True):
+      bola.vx=-bola.vx
+      bola.vy=-bola.vy
