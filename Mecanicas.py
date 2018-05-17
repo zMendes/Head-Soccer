@@ -1,7 +1,6 @@
 # Main Game
 
 # Imports
-import pymunk 
 import pygame as pg
 import random
 from settings import *
@@ -82,7 +81,10 @@ class Game:
 		#	self.square.vel.x = -self.square.vel.x
 			#self.square.vel.x = -self.square.vel.x
 		if hits2:
-			self.square.vel.x = -self.square.vel.x
+				if self.square.vel.x!=0:
+				    self.square.vel.x = -self.square.vel.x
+				else:
+				    self.square.vel.x= self.player.vel.x
 		if self.square.pos.x == 800 or self.square.pos.x ==0:
 			self.square.vel.x = -self.square.vel.x
             #if self.score > self.highscore:
@@ -164,7 +166,7 @@ class Game:
 
 
 # Jogo
-g = pymunk.space
+g = Game()
 g.show_start_screen()
 while g.running:
 	g.new()
