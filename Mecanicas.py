@@ -14,7 +14,6 @@ class Game:
 		pg.init()
 		pg.mixer.init()
 		self.screen = pg.display.set_mode((WIDTH+int(PLAYER_WIDTH/2), HEIGHT))
-		self.screen = pg.image.load("fundo2.png").convert
 		pg.display.set_caption(TITLE)
 		self.clock = pg.time.Clock()
 		self.font_name = pg.font.match_font(FONT_NAME)
@@ -125,14 +124,8 @@ class Game:
 					self.ResetBall()                    
              
 	def draw(self):
-		self.fundo = pg.image.load("fundo2.png").convert
-		self.screen = self.fundo
-		self.all_sprites.draw(self.screen) #mudei de screen p fundo
-		#self.draw_text("Score: " + str(self.score), 24, BLACK, WIDTH / 2, HEIGHT / 4)
-		#if self.score >= self.highscore and self.highscore != 0:
-		#	self.draw_text("NEW HIGH SCORE! " + str(self.highscore), 24, BLACK, WIDTH / 2, (HEIGHT / 4) - 30)
-		#else:
-		#	self.draw_text("High Score: " + str(self.highscore), 24, BLACK, WIDTH / 2, (HEIGHT / 4) - 30)
+		self.screen.fill(BGCOLOR)
+		self.all_sprites.draw(self.screen)
 	
 		pg.display.flip()
 
@@ -182,6 +175,7 @@ class Game:
 		text_rect = text_surface.get_rect()
 		text_rect.midtop = (x, y)
 		self.screen.blit(text_surface, text_rect)
+
 
 
 # Jogo
