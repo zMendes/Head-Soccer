@@ -110,12 +110,14 @@ class Square(pg.sprite.Sprite):
 		self.image.fill(RED)
 		self.rect = self.image.get_rect()
 		self.rect.center = (0, HEIGHT -40)
-		self.pos = vec(400, (HEIGHT))
+		self.pos = vec(400, (HEIGHT-40))
 		self.vel = vec(SQUARE_INICIAL, 0)
+
         
         
 	def update(self):
 #
+		self.acc = vec(0, GRAVITY)		
 		if self.pos.x < 0:
 			self.game.score += 1
 			self.vel.x = -self.vel.x + 0.1
@@ -123,7 +125,17 @@ class Square(pg.sprite.Sprite):
 		if self.pos.x > WIDTH:
 			self.game.score += 1
 			self.vel.x = -self.vel.x - 0.1
-
+		self.acc.x += self.vel.x * PLAYER_FRICTION
+		self.vel += self.acc
+		self.pos += self.vel + 0.5 * self.acc
 		self.pos.x += self.vel.x
 
 		self.rect.midbottom = self.pos
+	
+	def jump(self):
+		self.rect.y += 1
+		hits = pg.sprite.spritecollide(self, self.game.platforms, False)
+		self.rect.y -= 1
+		if hits:
+			self.vel.y = -SQUARE_JUMP
+            
