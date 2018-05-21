@@ -7,11 +7,13 @@ from settings import *
 from sprites import *
 from os import path
 
+
 # Class Jogo
 class Game:
 
 	def __init__(self):
 		pg.init()
+		pg.mixer.init()
 		pg.mixer.init()
 		self.screen = pg.display.set_mode((WIDTH+int(PLAYER_WIDTH/2), HEIGHT))
 		pg.display.set_caption(TITLE)
@@ -19,6 +21,7 @@ class Game:
 		self.font_name = pg.font.match_font(FONT_NAME)
 		self.running = True
 		#self.score = 0
+
         
 		#self.load_data()
 
@@ -50,17 +53,20 @@ class Game:
 		self.player2 = Player2(self, PLAYER_WIDTH, PLAYER_HEIGHT)  
 		self.all_sprites.add(self.player)
 		self.all_sprites.add(self.player2)  
+		pg.mixer.music.load("back.wav") 
+		self.Kick =pg.mixer.Sound("Football_Punts.wav")        
+		self.Referee = pg.mixer.Sound("referee.wav")
 		self.run()
 
 	def run(self):
 		self.playing = True
-
+		pg.mixer.music.play(-1)  
 		while self.playing:
 			self.clock.tick(FPS)
 			self.events()
 			self.update()
 			self.draw()
-
+      
 	def update(self):
 		self.all_sprites.update()
 		if self.square.vel.y>0:
@@ -76,7 +82,7 @@ class Game:
 		hits = pg.sprite.spritecollide(self.player, self.squares, False)
 		if self.player2.vel.y > 0:
 			hits = pg.sprite.spritecollide(self.player2, self.platforms, False)  
-			if hits:
+			if hits:     
 				self.player2.pos.y = hits[0].rect.top + 1
 				self.player2.vel.y = 0
 		hits2  = pg.sprite.spritecollide(self.player, self.squares, False)
@@ -112,16 +118,18 @@ class Game:
 					self.player.jump()
 				if event.key == pg.K_w:
 					self.player2.jump()
-				if  pg.sprite.spritecollide(self.player, self.squares, False):
-					self.square.jump()
-					self.square.vel.x = 30
-				if  pg.sprite.spritecollide(self.player2, self.squares, False):
-					self.square.jump()
-					self.square.vel.x = -30    
-				if self.square.pos.x <100 and self.square.pos.y >400:
-					self.ResetBall()
-				if self.square.pos.x >500 and self.square.pos.y > 400:
-					self.ResetBall()                    
+		if  pg.sprite.spritecollide(self.player, self.squares, False):
+			self.square.jump()
+			pg.mixer.Sound.play(self.Kick)
+			self.square.vel.x = 20
+		if  pg.sprite.spritecollide(self.player2, self.squares, False):
+			self.square.jump()
+			pg.mixer.Sound.play(self.Kick)                    
+			self.square.vel.x = -20    
+		if self.square.pos.x <20 and self.square.pos.y >500:
+			self.ResetBall()
+		if self.square.pos.x >790 and self.square.pos.y > 400:
+			self.ResetBall()                    
              
 	def draw(self):
 		self.screen.fill(BGCOLOR)
@@ -139,9 +147,12 @@ class Game:
 		self.wait_for_key()
 
 	def ResetBall(self):
-
+		pg.mixer.Sound.play(self.Referee)
 		self.square.pos= vec(400, (HEIGHT-40))
-		self.draw_text("GOAL!", 48, RED, WIDTH / 2, HEIGHT / 4)        
+		self.square.vel = vec(SQUARE_INICIAL, 0)
+		self.draw_text("GOAL!", 48, RED, WIDTH / 2, HEIGHT / 4)  
+		self.player.pos = 	vec(200, HEIGHT / 2)	  
+		self.player2.pos = vec(600, HEIGHT / 2)  
 	def show_go_screen(self):
 		if not self.running:
 			return
@@ -179,6 +190,7 @@ class Game:
 
 
 # Jogo
+surface = pg.image.load('fundo.jpg')
 g = Game()
 g.show_start_screen()
 while g.running:
