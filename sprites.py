@@ -101,7 +101,20 @@ class Platform(pg.sprite.Sprite):
 		self.rect.x = x
 		self.rect.y = y
 
-class Square(pg.sprite.Sprite):
+class Goal1(pg.sprite.Sprite):
+  
+  def __init__(self, arquivo_imagem, pos_x, pos_y, vel_x, vel_y):
+    pg.sprite.Sprite.__init__(self)
+    self.vx = vel_x
+    self.vy = vel_y
+    self.image = pg.image.load(arquivo_imagem)
+    self.rect = self.image.get_rect()
+    self.rect.x = pos_x
+    self.rect.y = pos_y
+
+
+
+class Square(pg.sprite.Sprite): 
 
 	def __init__(self, game, w, h):
 		pg.sprite.Sprite.__init__(self)
