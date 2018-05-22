@@ -3,6 +3,7 @@
 # Imports
 import pygame as pg
 import random
+from random import randrange
 from settings import *
 from sprites import *
 from os import path
@@ -15,14 +16,13 @@ class Game:
 	def __init__(self):
 		pg.init()
 		pg.mixer.init()
-		pg.mixer.init()
 		self.screen = pg.display.set_mode((WIDTH+int(PLAYER_WIDTH/2), HEIGHT))
 		pg.display.set_caption(TITLE)
 		self.clock = pg.time.Clock()
 		self.font_name = pg.font.match_font(FONT_NAME)
 		self.running = True
 		self.score = 0
-		self.surface = pg.image.load('fundo.jpg')
+
 
         
 		self.load_data()
@@ -52,12 +52,18 @@ class Game:
 		self.squares.add(self.square)
 		self.all_sprites.add(self.square)
 		self.player = Player(self, PLAYER_WIDTH, PLAYER_HEIGHT)
-		self.player2 = Player2(self, PLAYER_WIDTH, PLAYER_HEIGHT)  
+		self.player2 = Player2(self, PLAYER_WIDTH, PLAYER_HEIGHT)
+		self.goal = Goal("goal1.png",0,375, randrange(-10,10), randrange(-10,10))
+		self.goal2 = Goal("goal2.png", 769,375, randrange(-10,10), randrange(-10,10))
+		self.all_sprites.add(self.goal2)        
+		self.all_sprites.add(self.goal)
 		self.all_sprites.add(self.player)
 		self.all_sprites.add(self.player2)  
 		pg.mixer.music.load("back.wav") 
 		self.Kick =pg.mixer.Sound("Football_Punts.wav")        
 		self.Referee = pg.mixer.Sound("referee.wav")
+		self.Placar2 = 0
+		self.Placar1 = 0
 		self.run()
 
 	def run(self):
@@ -129,11 +135,13 @@ class Game:
 			pg.mixer.Sound.play(self.Kick)
 			self.square.jump()                    
 			self.square.vel.x = -20    
-		if self.square.pos.x <20 and self.square.pos.y >500:
+		if pg.sprite.spritecollide(self.goal, self.squares, False):
 			self.ResetBall()
-		if self.square.pos.x >790 and self.square.pos.y > 400:
+			self.Placar2 += 1
+						
+		if pg.sprite.spritecollide(self.goal2, self.squares, False):
 			self.ResetBall()                    
-             
+			self.Placar1 += 1
 	def draw(self):
 		self.screen.fill(BGCOLOR)
 		self.all_sprites.draw(self.screen)
