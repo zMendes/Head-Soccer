@@ -1,4 +1,4 @@
-# Sprite classes
+    # Sprite classes
 
 # Imports
 import pygame as pg
@@ -15,6 +15,7 @@ class Player2(pg.sprite.Sprite):
 		self.game = game
 		self.image = pg.image.load("head2.png")
 		self.rect = self.image.get_rect()
+		self.radius = int(self.rect.height /2)
 		self.rect.center = (WIDTH / 2, HEIGHT / 2)
 		self.pos = vec(600, HEIGHT / 2)
 		self.vel = vec(0, 0)
@@ -55,6 +56,7 @@ class Player(pg.sprite.Sprite):
 		self.game = game
 		self.image = pg.image.load("head1.png")
 		self.rect = self.image.get_rect()
+		self.radius = int(self.rect.height /2)
 		self.rect.center = (WIDTH / 2, HEIGHT / 2)
 		self.pos = vec(200, HEIGHT / 2)
 		self.vel = vec(0, 0)
@@ -110,7 +112,26 @@ class Goal1(pg.sprite.Sprite):
     self.rect.x = pos_x
     self.rect.y = pos_y
 
-
+class Background(pg.sprite.Sprite):
+  
+  def __init__(self, arquivo_imagem, pos_x, pos_y, vel_x, vel_y):
+    pg.sprite.Sprite.__init__(self)
+    self.vx = vel_x
+    self.vy = vel_y
+    self.image = pg.image.load(arquivo_imagem)
+    self.rect = self.image.get_rect()
+    self.rect.x = pos_x
+    self.rect.y = pos_y
+class Scoreboard(pg.sprite.Sprite):
+  
+  def __init__(self, arquivo_imagem, pos_x, pos_y, vel_x, vel_y):
+    pg.sprite.Sprite.__init__(self)
+    self.vx = vel_x
+    self.vy = vel_y
+    self.image = pg.image.load(arquivo_imagem)
+    self.rect = self.image.get_rect()
+    self.rect.x = pos_x
+    self.rect.y = pos_y    
 
 class Square(pg.sprite.Sprite): 
 
@@ -119,7 +140,7 @@ class Square(pg.sprite.Sprite):
 		self.game = game
 		self.image = pg.image.load("ball.png")
 		self.rect = self.image.get_rect()
-		#self.rect.center = (0,0)
+		self.radius = int(self.rect.height /2)
 		self.pos = vec(400, (HEIGHT-40))
 		self.vel = vec(SQUARE_INICIAL, 0)
         
@@ -146,4 +167,22 @@ class Square(pg.sprite.Sprite):
 		self.rect.y -= 1
 		if hits:
 			self.vel.y = -SQUARE_JUMP
-            
+
+class Background(pg.sprite.Sprite):
+    def __init__(self, image_file, location):
+        pg.sprite.Sprite.__init__(self)  
+        self.image = pg.image.load(image_file)
+        self.rect = self.image.get_rect()
+
+class Menu(pg.sprite.Sprite):
+    def __init__(self, image_file, location):
+        pg.sprite.Sprite.__init__(self)  
+        self.image = pg.image.load(image_file)
+        self.rect = self.image.get_rect()
+        
+class Pause(pg.sprite.Sprite):
+    def __init__(self, image_file, location):
+        pg.sprite.Sprite.__init__(self)  
+        self.image = pg.image.load(image_file)
+        self.rect = self.image.get_rect()
+                
