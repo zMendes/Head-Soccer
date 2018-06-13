@@ -1,10 +1,11 @@
+
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 200, 0)
-LIGHT_GREY = (208, 218, 234)
+LIGHT_GREY = (0, 214, 255)
 PINK = (255, 37, 129)
 
 # Game options / Settings
@@ -12,7 +13,7 @@ TITLE = "Head Soccer"
 WIDTH = 800
 HEIGHT = 600
 FPS = 60
-FONT_NAME = "Impact"
+FONT_NAME = "comicsansms"
 BGCOLOR = LIGHT_GREY
 HS_FILE = "highscore.txt"
 
@@ -30,3 +31,4 @@ SQUARE_SPEED = 10
 SQUARE_WIDTH = 25
 SQUARE_HEIGHT = 15
 SQUARE_JUMP = 20
+MAX_PLACAR = 9
