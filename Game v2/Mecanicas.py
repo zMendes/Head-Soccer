@@ -1,0 +1,236 @@
+# Imports
+import pygame as pg
+import random
+from random import randrange
+from settings import *
+from sprites import *
+from os import path
+import time
+music=True
+
+
+# Class Jogo
+class Game:
+
+	def __init__(self):
+		pg.init()
+		pg.mixer.init()
+		self.screen = pg.display.set_mode((WIDTH+int(PLAYER_WIDTH/2), HEIGHT))
+		pg.display.set_caption(TITLE)
+		self.clock = pg.time.Clock()
+		self.font_name = pg.font.match_font(FONT_NAME)
+		self.running = True
+		self.Sound = True
+		self.BackGround = Background('background.png', [0,0])
+		self.Menu = Menu('menu.jpg', [0,0])
+		self.Pause = Pause('pause.jpg',[0,0])
+
+
+	def new(self):
+		self.all_sprites = pg.sprite.Group()
+		self.platforms = pg.sprite.Group()    
+		self.squares = pg.sprite.Group()
+		floor = Platform(0, HEIGHT - 40, WIDTH+int(PLAYER_WIDTH/2), 40)
+		self.all_sprites.add(floor)
+		self.scoreboard = Scoreboard("Placar.png",WIDTH-540,HEIGHT-600,randrange(-10,10), randrange(-10,10))
+		self.platforms.add(floor)
+		self.square = Square(self,SQUARE_HEIGHT,SQUARE_WIDTH)
+		self.squares.add(self.square)
+		self.all_sprites.add(self.scoreboard)
+		self.all_sprites.add(self.square)
+		self.player = Player(self, PLAYER_WIDTH, PLAYER_HEIGHT)
+		self.player2 = Player2(self, PLAYER_WIDTH, PLAYER_HEIGHT)
+		self.goal = Goal1("goal1.png",0,375, randrange(-10,10), randrange(-10,10))
+		self.goal2 = Goal1("goal2.png", 769,375, randrange(-10,10), randrange(-10,10))
+		self.all_sprites.add(self.player)
+		self.all_sprites.add(self.player2) 
+		self.all_sprites.add(self.goal2)        
+		self.all_sprites.add(self.goal) 
+		pg.mixer.music.load("back1.wav") 
+		self.Kick =pg.mixer.Sound("Football_Punts.wav")        
+		self.Referee = pg.mixer.Sound("referee.wav")
+		self.Placar2 = 0
+		self.Placar1 = 0
+		self.run()
+
+	def run(self):
+ 
+		self.playing = True
+		pg.mixer.music.play(-1)
+		pg.mixer.music.set_volume(0.6)
+		while self.playing:   
+			self.clock.tick(FPS)
+			self.events()
+			self.update()
+			self.draw()
+      
+	def update(self):
+		self.all_sprites.update()
+		if self.square.vel.y>0:
+			hits4 = pg.sprite.spritecollide(self.square,self.platforms, False)
+			if hits4:
+				self.square.pos.y = hits4[0].rect.top + 1
+				self.square.vel.y = 0
+		if self.player.vel.y > 0:
+			hits = pg.sprite.spritecollide(self.player, self.platforms, False)
+			if hits:
+				self.player.pos.y = hits[0].rect.top + 1
+				self.player.vel.y = 0
+		hits = pg.sprite.spritecollide(self.player, self.squares, False)
+		if self.player2.vel.y > 0:
+			hits = pg.sprite.spritecollide(self.player2, self.platforms, False)  
+			if hits:     
+				self.player2.pos.y = hits[0].rect.top + 1
+				self.player2.vel.y = 0
+
+		hits2  = pg.sprite.spritecollide(self.player, self.squares, False)
+		hits3  = pg.sprite.spritecollide(self.player2, self.squares, False)
+		if self.player.pos.x == 40 or self.player.pos.x ==750: 
+			self.square.vel.x = 0
+		if hits3:        
+			self.square.vel.x = -self.square.vel.x
+			self.square.vel.x = -self.square.vel.x
+		if hits2:
+				if self.square.vel.x!=0:
+				    self.square.vel.x = -self.square.vel.x
+				else:
+				    self.square.vel.x= self.player.vel.x
+		if self.square.pos.x == 800 or self.square.pos.x ==0:
+			self.square.vel.x = -self.square.vel.x
+            
+	def events(self):
+		for event in pg.event.get():
+            
+			if event.type == pg.QUIT:
+				if self.playing:
+					self.playing = False
+				self.running = False
+
+			if event.type == pg.KEYDOWN:
+
+				if event.key == pg.K_w:
+					self.player.jump()
+				if event.key == pg.K_UP:
+					self.player2.jump()    
+			if event.type == pg.KEYUP:
+					if event.key == pg.K_p:    
+						self.Sound = False
+						pg.mixer.music.pause()                        
+					if event.key == pg.K_u:
+						self.Sound = True
+						pg.mixer.music.unpause()                        
+					if event.key==pg.K_r:
+						g.show_start_screen()
+						while g.running:
+							g.new()
+					if event.key==pg.K_c:
+						g.show_pause_screen()
+					if event.key==pg.K_ESCAPE:
+						pg.quit()
+		if pg.sprite.spritecollide(self.player, self.squares, False):
+			if self.Sound == True:
+					pg.mixer.Sound.play(self.Kick)
+			self.square.jump()
+			self.square.vel.x = 20
+		if  pg.sprite.spritecollide(self.player2, self.squares, False):
+			if self.Sound == True:
+					pg.mixer.Sound.play(self.Kick)
+
+			self.square.jump()                    
+			self.square.vel.x = -20 
+		if self.playing:
+            
+			if self.square.pos.x <60 and self.square.pos.y >430:   #Area Gol1
+					self.ResetBall()
+					self.Placar2 += 1
+			if self.square.pos.x >790 and self.square.pos.y > 430: #Area Gol2
+					self.ResetBall()                    
+					self.Placar1 += 1  
+			if self.square.pos.x >766 and self.square.pos.y < 430: #Area Trave1
+					self.square.vel.x = -self.square.vel.x
+					self.square.vel.y=-self.square.vel.y
+			if self.square.pos.x <55 and self.square.pos.y < 430: #Area Trave2
+					self.square.vel.x = -self.square.vel.x
+					self.square.vel.y=-self.square.vel.y
+			if self.Placar1 >MAX_PLACAR:
+					self.draw_text("Home Wins!", 48, PINK, WIDTH / 2, HEIGHT / 3)
+					time.sleep(2)
+					g.show_start_screen()
+					while g.running:
+							g.new()
+							g.show_go_screen()
+			if self.Placar2 >MAX_PLACAR:
+					self.draw_text("Visitor Wins!", 48, PINK, WIDTH / 2, HEIGHT / 3)
+					time.sleep(2)
+					g.show_start_screen()
+					while g.running:
+							g.new()
+							g.show_go_screen()
+                                    
+	def draw(self):
+		self.screen.fill(BGCOLOR)
+		self.screen.blit(self.BackGround.image, self.BackGround.rect) 
+		self.all_sprites.draw(self.screen)
+		self.draw_text(("{0}            {1}".format(self.Placar1,self.Placar2)),60,BLACK,WIDTH-400,HEIGHT-560)
+		pg.display.flip()
+
+	def show_start_screen(self):
+		self.screen.fill(GREEN)
+		self.screen.blit(self.Menu.image, self.Menu.rect) 
+		pg.display.flip()
+		waiting=True
+		while waiting:
+			self.clock.tick(FPS)
+			for event in pg.event.get():
+				if event.type == pg.QUIT:
+					waiting = False
+					self.running = False
+				if event.type == pg.KEYUP:
+					waiting=False	           
+
+	def ResetBall(self):
+		if self.Sound == True:
+			pg.mixer.Sound.play(self.Referee)
+		self.square.pos= vec(400, (HEIGHT-40))
+		self.square.vel = vec(SQUARE_INICIAL, 0)
+		if self.Placar1 <MAX_PLACAR or self.Placar2 <MAX_PLACAR:
+			self.draw_text("GOAAAL!", 48, RED, WIDTH / 2, HEIGHT / 4)      
+		time.sleep(0.3415)
+		self.player.pos = 	vec(200, HEIGHT / 2.5)	  
+		self.player2.pos = vec(600, HEIGHT / 2.5) 
+	
+	def show_pause_screen(self):
+		self.screen.blit(self.Pause.image,self.Pause.rect)
+		pg.display.flip()
+		self.wait_for_key()
+
+	def wait_for_key(self):
+		waiting = True
+		while waiting:
+			self.clock.tick(FPS)
+			for event in pg.event.get():
+				if event.type == pg.QUIT:
+					waiting = False
+					self.running = False
+				if event.type == pg.KEYUP:
+					if event.key==pg.K_c:
+						waiting=False
+
+	def draw_text(self, text, size, color, x, y):
+		font = pg.font.SysFont(self.font_name, size)
+		text_surface = font.render(text, True, color)
+		text_rect = text_surface.get_rect()
+		text_rect.midtop = (x, y)
+		self.screen.blit(text_surface, text_rect)
+		pg.display.flip()        
+
+
+
+# Jogo
+g = Game()
+g.show_start_screen()
+while g.running:
+	g.new()
+
+
+pg.quit()
