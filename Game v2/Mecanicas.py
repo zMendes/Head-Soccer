@@ -46,7 +46,7 @@ class Game:
 		self.all_sprites.add(self.player2) 
 		self.all_sprites.add(self.goal2)        
 		self.all_sprites.add(self.goal) 
-		pg.mixer.music.load("back1.wav") 
+		#pg.mixer.music.load("back1.wav")      NÃO CONSEGUI DAR UPLOAD NO ARQUIVO DA MÚSICA
 		self.Kick =pg.mixer.Sound("Football_Punts.wav")        
 		self.Referee = pg.mixer.Sound("referee.wav")
 		self.Placar2 = 0
@@ -56,8 +56,8 @@ class Game:
 	def run(self):
  
 		self.playing = True
-		pg.mixer.music.play(-1)
-		pg.mixer.music.set_volume(0.6)
+		#pg.mixer.music.play(-1)
+		#pg.mixer.music.set_volume(0.6)
 		while self.playing:   
 			self.clock.tick(FPS)
 			self.events()
@@ -86,7 +86,7 @@ class Game:
 		hits2  = pg.sprite.spritecollide(self.player, self.squares, False)
 		hits3  = pg.sprite.spritecollide(self.player2, self.squares, False)
 		if self.player.pos.x == 40 or self.player.pos.x ==750: 
-			self.square.vel.x = 0
+			self.square.vel.x = 0a
 		if hits3:        
 			self.square.vel.x = -self.square.vel.x
 			self.square.vel.x = -self.square.vel.x
@@ -115,10 +115,10 @@ class Game:
 			if event.type == pg.KEYUP:
 					if event.key == pg.K_p:    
 						self.Sound = False
-						pg.mixer.music.pause()                        
+						#pg.mixer.music.pause()                        
 					if event.key == pg.K_u:
 						self.Sound = True
-						pg.mixer.music.unpause()                        
+						#pg.mixer.music.unpause()                        
 					if event.key==pg.K_r:
 						g.show_start_screen()
 						while g.running:
