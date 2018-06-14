@@ -1,12 +1,12 @@
-# Main Game
-
 # Imports
 import pygame as pg
 import random
+from random import randrange
 from settings import *
 from sprites import *
 from os import path
 import time
+music=True
 
 
 # Class Jogo
@@ -14,31 +14,17 @@ class Game:
 
 	def __init__(self):
 		pg.init()
-		#pg.mixer.init()
+		pg.mixer.init()
 		self.screen = pg.display.set_mode((WIDTH+int(PLAYER_WIDTH/2), HEIGHT))
 		pg.display.set_caption(TITLE)
 		self.clock = pg.time.Clock()
 		self.font_name = pg.font.match_font(FONT_NAME)
 		self.running = True
-		self.score=0
+		self.Sound = True
+		self.BackGround = Background('background.png', [0,0])
+		self.Menu = Menu('menu.jpg', [0,0])
+		self.Pause = Pause('pause.jpg',[0,0])
 
-
-        
-		#self.load_data()
-
-	#def load_data(self):
-		#load highscore
-	#	self.dir = path.dirname(__file__)
-	#	if path.isfile(path.join(self.dir, HS_FILE)):
-	#		self.file_exist = "r+"
-	#	else:
-	#		self.file_exist = "w"
-
-	#	with open(path.join(self.dir, HS_FILE), self.file_exist) as hs:
-	#		try:
-	#			self.highscore = int(hs.read())
-	#		except:
-	#			self.highscore = 0
 
 	def new(self):
 		self.all_sprites = pg.sprite.Group()
@@ -46,23 +32,33 @@ class Game:
 		self.squares = pg.sprite.Group()
 		floor = Platform(0, HEIGHT - 40, WIDTH+int(PLAYER_WIDTH/2), 40)
 		self.all_sprites.add(floor)
+		self.scoreboard = Scoreboard("Placar.png",WIDTH-540,HEIGHT-600,randrange(-10,10), randrange(-10,10))
 		self.platforms.add(floor)
-		self.square = Square(self, SQUARE_WIDTH, SQUARE_HEIGHT)
+		self.square = Square(self,SQUARE_HEIGHT,SQUARE_WIDTH)
 		self.squares.add(self.square)
+		self.all_sprites.add(self.scoreboard)
 		self.all_sprites.add(self.square)
 		self.player = Player(self, PLAYER_WIDTH, PLAYER_HEIGHT)
-		self.player2 = Player2(self, PLAYER_WIDTH, PLAYER_HEIGHT)  
+		self.player2 = Player2(self, PLAYER_WIDTH, PLAYER_HEIGHT)
+		self.goal = Goal1("goal1.png",0,375, randrange(-10,10), randrange(-10,10))
+		self.goal2 = Goal1("goal2.png", 769,375, randrange(-10,10), randrange(-10,10))
 		self.all_sprites.add(self.player)
-		self.all_sprites.add(self.player2)  
-		#pg.mixer.music.load("back.wav") 
-		#self.Kick =pg.mixer.Sound("Football_Punts.wav")        
-		#self.Referee = pg.mixer.Sound("referee.wav")
+		self.all_sprites.add(self.player2) 
+		self.all_sprites.add(self.goal2)        
+		self.all_sprites.add(self.goal) 
+		pg.mixer.music.load("back1.wav") 
+		self.Kick =pg.mixer.Sound("Football_Punts.wav")        
+		self.Referee = pg.mixer.Sound("referee.wav")
+		self.Placar2 = 0
+		self.Placar1 = 0
 		self.run()
 
 	def run(self):
+ 
 		self.playing = True
-		#pg.mixer.music.play(-1)  
-		while self.playing:
+		pg.mixer.music.play(-1)
+		pg.mixer.music.set_volume(0.1)
+		while self.playing:   
 			self.clock.tick(FPS)
 			self.events()
 			self.update()
@@ -101,17 +97,10 @@ class Game:
 				    self.square.vel.x= self.player.vel.x
 		if self.square.pos.x == 800 or self.square.pos.x ==0:
 			self.square.vel.x = -self.square.vel.x
-	#	if self.score > self.highscore:
-	#		self.highscore = self.score
-	#		with open(path.join(self.dir, HS_FILE), "r+") as hs:
-	#			hs.write(str(self.highscore))
-
+            
 	def events(self):
 		for event in pg.event.get():
-			if event.type == pg.KEYUP:
-				if event.key == pg.K_ESCAPE:
-					g.show_start_screen()
-					self.playing = False                    				
+            
 			if event.type == pg.QUIT:
 				if self.playing:
 					self.playing = False
@@ -119,65 +108,93 @@ class Game:
 
 			if event.type == pg.KEYDOWN:
 
-				if event.key == pg.K_UP:
-					self.player.jump()
 				if event.key == pg.K_w:
-					self.player2.jump()
-                
-		if  pg.sprite.spritecollide(self.player, self.squares, False):
-			#pg.mixer.Sound.play(self.Kick)
+					self.player.jump()
+				if event.key == pg.K_UP:
+					self.player2.jump()    
+			if event.type == pg.KEYUP:
+					if event.key == pg.K_p:    
+						self.Sound = False
+						pg.mixer.music.pause()                        
+					if event.key == pg.K_u:
+						self.Sound = True
+						pg.mixer.music.unpause()                        
+					if event.key==pg.K_r:
+						g.show_start_screen()
+						while g.running:
+							g.new()
+					if event.key==pg.K_c:
+						g.show_pause_screen()
+					if event.key==pg.K_ESCAPE:
+						pg.quit()
+		if pg.sprite.spritecollide(self.player, self.squares, False):
+			if self.Sound == True:
+					pg.mixer.Sound.play(self.Kick)
 			self.square.jump()
 			self.square.vel.x = 20
 		if  pg.sprite.spritecollide(self.player2, self.squares, False):
-			#pg.mixer.Sound.play(self.Kick)
+			if self.Sound == True:
+					pg.mixer.Sound.play(self.Kick)
+
 			self.square.jump()                    
-			self.square.vel.x = -20    
-		if self.square.pos.x <20 and self.square.pos.y >500:
-			self.ResetBall()
-		if self.square.pos.x >790 and self.square.pos.y > 400:
-			self.ResetBall()
-             
+			self.square.vel.x = -20 
+		if self.playing:
+            
+			if self.square.pos.x <60 and self.square.pos.y >430:
+					self.ResetBall()
+					self.Placar2 += 1
+			if self.square.pos.x >790 and self.square.pos.y > 430:
+					self.ResetBall()                    
+					self.Placar1 += 1  
+			if self.square.pos.x >766 and self.square.pos.y < 430:
+					self.square.vel.x = -self.square.vel.x
+					self.square.vel.y=-self.square.vel.y
+			if self.square.pos.x <55 and self.square.pos.y < 430:
+					self.square.vel.x = -self.square.vel.x
+					self.square.vel.y=-self.square.vel.y
+			if self.Placar1 >MAX_PLACAR:
+					self.draw_text("Player 1 Wins!", 48, PINK, WIDTH / 2, HEIGHT / 3)
+					time.sleep(2)
+					g.show_start_screen()
+					while g.running:
+							g.new()
+							g.show_go_screen()
+			if self.Placar2 >MAX_PLACAR:
+					self.draw_text("Player 2 Wins!", 48, PINK, WIDTH / 2, HEIGHT / 3)
+					time.sleep(2)
+					g.show_start_screen()
+					while g.running:
+							g.new()
+							g.show_go_screen()
+                                    
 	def draw(self):
 		self.screen.fill(BGCOLOR)
+		self.screen.blit(self.BackGround.image, self.BackGround.rect) 
 		self.all_sprites.draw(self.screen)
-		self.draw_text("Score: "+str(self.score),40,BLACK,WIDTH-700,HEIGHT-600)
-		self.draw_text("Score: "+str(self.score),40,BLACK,WIDTH-80,HEIGHT-600)
+		self.draw_text(("{0}            {1}".format(self.Placar1,self.Placar2)),60,BLACK,WIDTH-400,HEIGHT-560)
 		pg.display.flip()
 
 	def show_start_screen(self):
-		self.screen.fill(BGCOLOR)
-		self.draw_text(TITLE, 48, RED, WIDTH / 2, HEIGHT / 4)
-		self.draw_text("Press the arrows to move", 24, BLACK, WIDTH / 2, HEIGHT / 2)
-		self.draw_text("Press a key to play", 24, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
-		#self.draw_text("High Score: " + str(self.highscore), 24, BLACK, WIDTH / 2, 15)
+		self.screen.fill(GREEN)
+		self.screen.blit(self.Menu.image, self.Menu.rect) 
 		pg.display.flip()
 		self.wait_for_key()
-        
 
-        
-            
 	def ResetBall(self):
-		#pg.mixer.Sound.play(self.Referee)
+		if self.Sound == True:
+			pg.mixer.Sound.play(self.Referee)
 		self.square.pos= vec(400, (HEIGHT-40))
 		self.square.vel = vec(SQUARE_INICIAL, 0)
-		self.draw_text("GOAAAL!", 48, RED, WIDTH / 2, HEIGHT / 4)
-		time.sleep(0.28999999997878767789765465478)
-		self.player.pos = 	vec(200, HEIGHT / 2)	  
-		self.player2.pos = vec(600, HEIGHT / 2) 
-		
-        
-	def show_go_screen(self):
-		if not self.running:
-			return
-		self.screen.fill(BGCOLOR)
-		self.draw_text("Press a key to play again", 24, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
-		#if self.score >= self.highscore and self.highscore != 0:
-			#self.draw_text("NEW HIGH SCORE! " + str(self.highscore), 24, BLACK, WIDTH / 2, (HEIGHT / 4) - 30)
-		#else:
-		#	self.draw_text("High Score: " + str(self.highscore), 36, BLACK, WIDTH / 2, (HEIGHT / 2) - 30)
+		if self.Placar1 <MAX_PLACAR or self.Placar2 <MAX_PLACAR:
+			self.draw_text("GOAAAL!", 48, RED, WIDTH / 2, HEIGHT / 4)      
+		time.sleep(0.3415)
+		self.player.pos = 	vec(200, HEIGHT / 2.5)	  
+		self.player2.pos = vec(600, HEIGHT / 2.5) 
+	
+	def show_pause_screen(self):
+		self.screen.blit(self.Pause.image,self.Pause.rect)
 		pg.display.flip()
 		self.wait_for_key()
-
 
 	def wait_for_key(self):
 		waiting = True
@@ -188,16 +205,15 @@ class Game:
 					waiting = False
 					self.running = False
 				if event.type == pg.KEYUP:
-					self.score = 0
-					waiting = False
+					waiting=False  
 
 	def draw_text(self, text, size, color, x, y):
-		font = pg.font.Font(self.font_name, size)
+		font = pg.font.SysFont(self.font_name, size)
 		text_surface = font.render(text, True, color)
 		text_rect = text_surface.get_rect()
 		text_rect.midtop = (x, y)
 		self.screen.blit(text_surface, text_rect)
-		pg.display.flip()
+		pg.display.flip()        
 
 
 
@@ -206,11 +222,6 @@ g = Game()
 g.show_start_screen()
 while g.running:
 	g.new()
-	g.show_go_screen()
+
 
 pg.quit()
-
-
-
-
-
